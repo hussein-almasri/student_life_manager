@@ -18,7 +18,7 @@ class DashboardScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('الرئيسية'),
+        title: const Text('home '),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -39,13 +39,13 @@ class DashboardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'ملخص اليوم 👋',
+              'Todays summary',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 24),
 
             Text(
-              'نسبة الإنجاز',
+              'Percentage of completion',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -55,21 +55,21 @@ class DashboardScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             const SizedBox(height: 8),
-            Text('${(progress * 100).toStringAsFixed(0)}% مكتمل'),
+            Text('${(progress * 100).toStringAsFixed(0)}% complete'),
 
             const SizedBox(height: 32),
 
             Row(
               children: [
                 _StatCard(
-                  title: 'كل الواجبات',
+                  title: 'all tasks ',
                   value: totalTasks.toString(),
                   icon: Icons.assignment,
                   color: Colors.blue,
                 ),
                 const SizedBox(width: 16),
                 _StatCard(
-                  title: 'المنجزة',
+                  title: 'Completed',
                   value: completedTasks.toString(),
                   icon: Icons.check_circle,
                   color: Colors.green,
@@ -80,7 +80,7 @@ class DashboardScreen extends StatelessWidget {
             Row(
               children: [
                 _StatCard(
-                  title: 'المتبقية',
+                  title: 'remaining',
                   value: pendingTasks.toString(),
                   icon: Icons.schedule,
                   color: Colors.orange,

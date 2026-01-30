@@ -29,11 +29,11 @@ class _NotesScreenState extends State<NotesScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(index == null ? 'إضافة ملاحظة' : 'تعديل الملاحظة'),
+          title: Text(index == null ? ' Add a note' : 'Edit the note '),
           content: TextField(
             controller: _noteController,
             decoration: const InputDecoration(
-              hintText: 'اكتب ملاحظتك هنا',
+              hintText: 'write your note here ',
             ),
             maxLines: 4,
           ),
@@ -43,7 +43,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 _noteController.clear();
                 Navigator.pop(context);
               },
-              child: const Text('إلغاء'),
+              child: const Text('delete'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -60,7 +60,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 _noteController.clear();
                 Navigator.pop(context);
               },
-              child: const Text('حفظ'),
+              child: const Text('save'),
             ),
           ],
         );
@@ -72,10 +72,10 @@ class _NotesScreenState extends State<NotesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ملاحظات - ${widget.subjectName}'),
+        title: Text('note  - ${widget.subjectName}'),
       ),
       body: notes.isEmpty
-          ? const Center(child: Text('لا يوجد ملاحظات بعد'))
+          ? const Center(child: Text('No note yet'))
           : ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, index) {

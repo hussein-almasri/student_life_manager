@@ -16,7 +16,7 @@ class _TasksScreenState extends State<TasksScreen> {
   void _addTask() async {
     if (AppData.subjects.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('أضف مادة أولًا')),
+        const SnackBar(content: Text('Add material first')),
       );
       return;
     }
@@ -30,7 +30,7 @@ class _TasksScreenState extends State<TasksScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('إضافة واجب'),
+          title: const Text('Adding a tasks'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -38,11 +38,11 @@ class _TasksScreenState extends State<TasksScreen> {
                 TextField(
                   controller: titleController,
                   decoration:
-                      const InputDecoration(hintText: 'اسم الواجب'),
+                      const InputDecoration(hintText: 'Tasks Name'),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  hint: const Text('اختر المادة'),
+                  hint: const Text('Choose the material'),
                   items: AppData.subjects
                       .map(
                         (s) => DropdownMenuItem(
@@ -60,7 +60,7 @@ class _TasksScreenState extends State<TasksScreen> {
                   icon: const Icon(Icons.calendar_today),
                   label: Text(
                     selectedDate == null
-                        ? 'اختيار تاريخ الانتهاء'
+                        ? 'Choosing the end time '
                         : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
                   ),
                   onPressed: () async {
@@ -81,7 +81,7 @@ class _TasksScreenState extends State<TasksScreen> {
                   icon: const Icon(Icons.access_time),
                   label: Text(
                     selectedTime == null
-                        ? 'اختيار الوقت'
+                        ? 'Choosing the time'
                         : selectedTime!.format(context),
                   ),
                   onPressed: () async {
@@ -100,7 +100,7 @@ class _TasksScreenState extends State<TasksScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('إلغاء'),
+              child: const Text('delete '),
             ),
             ElevatedButton(
               onPressed: () {
@@ -145,7 +145,7 @@ class _TasksScreenState extends State<TasksScreen> {
                 setState(() {});
                 Navigator.pop(context);
               },
-              child: const Text('إضافة'),
+              child: const Text('Add'),
             ),
           ],
         );
@@ -166,7 +166,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('الواجبات'),
+        title: const Text('Tasks '),
       ),
       body: Column(
         children: [
@@ -174,7 +174,7 @@ class _TasksScreenState extends State<TasksScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: const InputDecoration(
-                hintText: 'ابحث عن واجب أو مادة...',
+                hintText: 'Search for an tasks or subject...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
@@ -185,7 +185,7 @@ class _TasksScreenState extends State<TasksScreen> {
           ),
           Expanded(
             child: filteredTasks.isEmpty
-                ? const Center(child: Text('لا يوجد نتائج'))
+                ? const Center(child: Text('No results found'))
                 : ListView.builder(
                     itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {

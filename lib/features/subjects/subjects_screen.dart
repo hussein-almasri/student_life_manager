@@ -17,17 +17,17 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('إضافة مادة'),
+          title: const Text('Add the subjects '),
           content: TextField(
             controller: controller,
             decoration: const InputDecoration(
-              hintText: 'اسم المادة',
+              hintText: 'Name of the subject ',
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('إلغاء'),
+              child: const Text('Delete'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -37,7 +37,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                 setState(() {});
                 Navigator.pop(context);
               },
-              child: const Text('إضافة'),
+              child: const Text('Add'),
             ),
           ],
         );
@@ -51,10 +51,10 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('المواد'),
+        title: const Text('subjects'),
       ),
       body: subjects.isEmpty
-          ? const Center(child: Text('لا يوجد مواد'))
+          ? const Center(child: Text('No subjects'))
           : ListView.builder(
               itemCount: subjects.length,
               itemBuilder: (context, index) {

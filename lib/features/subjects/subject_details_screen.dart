@@ -21,7 +21,7 @@ class SubjectDetailsScreen extends StatelessWidget {
       ),
       body: subjectTasks.isEmpty
           ? const Center(
-              child: Text('لا يوجد واجبات لهذه المادة'),
+              child: Text('There are no Tasks  for this subject'),
             )
           : ListView.builder(
               itemCount: subjectTasks.length,
@@ -78,17 +78,17 @@ class _NotesScreenState extends State<NotesScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('إضافة ملاحظة'),
+          title: const Text('Add a Note'),
           content: TextField(
             controller: _noteController,
             decoration: const InputDecoration(
-              hintText: 'اكتب ملاحظتك هنا',
+              hintText: 'write your note here',
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('إلغاء'),
+              child: const Text('Delete'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -96,14 +96,14 @@ class _NotesScreenState extends State<NotesScreen> {
 
                 AppData.addNote(
                   subject: widget.subjectName,
-                  title: 'ملاحظة',
+                  title: 'Note',
                   content: _noteController.text.trim(),
                 );
 
                 setState(() {});
                 Navigator.pop(context);
               },
-              child: const Text('إضافة'),
+              child: const Text('Add'),
             ),
           ],
         );
@@ -120,17 +120,17 @@ class _NotesScreenState extends State<NotesScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('تعديل الملاحظة'),
+          title: const Text('Edit Note'),
           content: TextField(
             controller: _noteController,
             decoration: const InputDecoration(
-              hintText: 'عدّل الملاحظة',
+              hintText: 'Edit the note',
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('إلغاء'),
+              child: const Text('Delete'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -145,7 +145,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 setState(() {});
                 Navigator.pop(context);
               },
-              child: const Text('حفظ'),
+              child: const Text('save'),
             ),
           ],
         );
@@ -162,7 +162,7 @@ class _NotesScreenState extends State<NotesScreen> {
         title: Text('Notes - ${widget.subjectName}'),
       ),
       body: notes.isEmpty
-          ? const Center(child: Text('لا يوجد ملاحظات'))
+          ? const Center(child: Text('No Note '))
           : ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, index) {

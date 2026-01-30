@@ -40,15 +40,15 @@ class _HomeScreenState extends State<HomeScreen> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.dashboard),
-            label: 'الرئيسية',
+            label: 'home',
           ),
           NavigationDestination(
             icon: Icon(Icons.book),
-            label: 'المواد',
+            label: 'subjects',
           ),
           NavigationDestination(
             icon: Icon(Icons.assignment),
-            label: 'الواجبات',
+            label: 'tasks',
           ),
         ],
       ),

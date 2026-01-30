@@ -15,15 +15,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('الإعدادات'),
+        title: const Text('settings '),
       ),
       body: ListView(
         children: [
           // 🌙 Dark Mode
           SwitchListTile(
             secondary: const Icon(Icons.dark_mode),
-            title: const Text('الوضع الداكن'),
-            subtitle: const Text('تشغيل / إيقاف الوضع الداكن'),
+            title: const Text('Dark mode'),
+            subtitle: const Text('Turn on/off dark mode'),
             value: settings.darkMode,
             onChanged: (value) {
               final updatedSettings =
