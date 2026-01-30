@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/data/app_data.dart';
-import '../../core/notifications/notification_service.dart';
 import 'task_model.dart';
+import '../subjects/subject_model.dart';
 
 class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
@@ -12,11 +12,26 @@ class TasksScreen extends StatefulWidget {
 
 class _TasksScreenState extends State<TasksScreen> {
   String _searchQuery = '';
+  late Future<List<Task>> _tasksFuture;
 
-  void _addTask() async {
-    if (AppData.subjects.isEmpty) {
+  @override
+  void initState() {
+    super.initState();
+    _tasksFuture = AppData.getTasks();
+  }
+
+  void _refresh() {
+    setState(() {
+      _tasksFuture = AppData.getTasks();
+    });
+  }
+
+  Future<void> _addTask() async {
+    final subjects = await AppData.getSubjects();
+
+    if (subjects.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Add material first')),
+        const SnackBar(content: Text('Add subject first')),
       );
       return;
     }
@@ -30,20 +45,19 @@ class _TasksScreenState extends State<TasksScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Adding a tasks'),
+          title: const Text('Adding a task'),
           content: SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: titleController,
                   decoration:
-                      const InputDecoration(hintText: 'Tasks Name'),
+                      const InputDecoration(hintText: 'Task name'),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  hint: const Text('Choose the material'),
-                  items: AppData.subjects
+                  hint: const Text('Choose subject'),
+                  items: subjects
                       .map(
                         (s) => DropdownMenuItem(
                           value: s.name,
@@ -51,16 +65,14 @@ class _TasksScreenState extends State<TasksScreen> {
                         ),
                       )
                       .toList(),
-                  onChanged: (value) {
-                    selectedSubject = value;
-                  },
+                  onChanged: (value) => selectedSubject = value,
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.calendar_today),
                   label: Text(
                     selectedDate == null
-                        ? 'Choosing the end time '
+                        ? 'Choose date'
                         : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
                   ),
                   onPressed: () async {
@@ -72,7 +84,7 @@ class _TasksScreenState extends State<TasksScreen> {
                       initialDate: DateTime.now(),
                     );
                     if (date != null) {
-                      setState(() => selectedDate = date);
+                      selectedDate = date;
                     }
                   },
                 ),
@@ -81,7 +93,7 @@ class _TasksScreenState extends State<TasksScreen> {
                   icon: const Icon(Icons.access_time),
                   label: Text(
                     selectedTime == null
-                        ? 'Choosing the time'
+                        ? 'Choose time'
                         : selectedTime!.format(context),
                   ),
                   onPressed: () async {
@@ -90,7 +102,7 @@ class _TasksScreenState extends State<TasksScreen> {
                       initialTime: TimeOfDay.now(),
                     );
                     if (time != null) {
-                      setState(() => selectedTime = time);
+                      selectedTime = time;
                     }
                   },
                 ),
@@ -100,10 +112,10 @@ class _TasksScreenState extends State<TasksScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('delete '),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (titleController.text.isEmpty ||
                     selectedSubject == null ||
                     selectedDate == null ||
@@ -119,7 +131,6 @@ class _TasksScreenState extends State<TasksScreen> {
                   selectedTime!.minute,
                 );
 
-                // ✅ إنشاء الواجب
                 final task = Task(
                   id: DateTime.now().millisecondsSinceEpoch,
                   title: titleController.text,
@@ -127,22 +138,11 @@ class _TasksScreenState extends State<TasksScreen> {
                   dueDate: dueDate,
                 );
 
-                // 💾 حفظ الواجب
-                AppData.addTask(task);
+                await AppData.addTask(task);
 
-                // 🔔 جدولة التنبيه قبل ساعة
-                final notificationTime =
-                    dueDate.subtract(const Duration(hours: 1));
+                
 
-                if (notificationTime.isAfter(DateTime.now())) {
-                  NotificationService.scheduleTaskNotification(
-                    id: task.id,
-                    title: '📚 ${task.title} - ${task.subject}',
-                    scheduledTime: notificationTime,
-                  );
-                }
-
-                setState(() {});
+                _refresh();
                 Navigator.pop(context);
               },
               child: const Text('Add'),
@@ -155,26 +155,17 @@ class _TasksScreenState extends State<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tasks = [...AppData.tasks]
-      ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
-
-    final filteredTasks = tasks.where((task) {
-      final q = _searchQuery.toLowerCase();
-      return task.title.toLowerCase().contains(q) ||
-          task.subject.toLowerCase().contains(q);
-    }).toList();
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tasks '),
+        title: const Text('Tasks'),
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: TextField(
               decoration: const InputDecoration(
-                hintText: 'Search for an tasks or subject...',
+                hintText: 'Search task or subject...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
@@ -184,31 +175,60 @@ class _TasksScreenState extends State<TasksScreen> {
             ),
           ),
           Expanded(
-            child: filteredTasks.isEmpty
-                ? const Center(child: Text('No results found'))
-                : ListView.builder(
-                    itemCount: filteredTasks.length,
-                    itemBuilder: (context, index) {
-                      final task = filteredTasks[index];
+            child: FutureBuilder<List<Task>>(
+              future: _tasksFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return const Center(
+                      child: CircularProgressIndicator());
+                }
 
-                      return ListTile(
-                        leading: Checkbox(
-                          value: task.isDone,
-                          onChanged: (value) {
-                            AppData.toggleTaskById(
-                                task.id, value ?? false);
-                            setState(() {});
-                          },
-                        ),
-                        title: Text(task.title),
-                        subtitle: Text(
-                          '${task.subject} • '
-                          '${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year} '
-                          '${task.dueDate.hour}:${task.dueDate.minute.toString().padLeft(2, '0')}',
-                        ),
-                      );
-                    },
-                  ),
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text('Error: ${snapshot.error}'));
+                }
+
+                final tasks = snapshot.data!
+                  ..sort(
+                      (a, b) => a.dueDate.compareTo(b.dueDate));
+
+                final filteredTasks = tasks.where((task) {
+                  final q = _searchQuery.toLowerCase();
+                  return task.title.toLowerCase().contains(q) ||
+                      task.subject.toLowerCase().contains(q);
+                }).toList();
+
+                if (filteredTasks.isEmpty) {
+                  return const Center(
+                      child: Text('No results found'));
+                }
+
+                return ListView.builder(
+                  itemCount: filteredTasks.length,
+                  itemBuilder: (context, index) {
+                    final task = filteredTasks[index];
+
+                    return ListTile(
+                      leading: Checkbox(
+                        value: task.isDone,
+                        onChanged: (value) async {
+                          await AppData.toggleTask(
+                              task.id, value ?? false);
+                          _refresh();
+                        },
+                      ),
+                      title: Text(task.title),
+                      subtitle: Text(
+                        '${task.subject} • '
+                        '${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year} '
+                        '${task.dueDate.hour}:${task.dueDate.minute.toString().padLeft(2, '0')}',
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

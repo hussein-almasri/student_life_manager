@@ -1,45 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
-import 'core/theme/app_theme.dart';
-import 'core/data/app_data.dart';
+import 'package:student_life_manager/core/theme/app_theme.dart';
+import 'package:student_life_manager/core/data/app_data.dart';
+import 'package:student_life_manager/core/settings/app_settings.dart';
 import 'home_screen.dart';
-import 'core/notifications/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-
-  await Hive.openBox('subjects');
-  await Hive.openBox('tasks');
-  await Hive.openBox('settings');
-  await Hive.openBox('notes');
-
-  await NotificationService.init();
-
   runApp(const StudentLifeApp());
 }
 
-class StudentLifeApp extends StatefulWidget {
+class StudentLifeApp extends StatelessWidget {
   const StudentLifeApp({super.key});
 
   @override
-  State<StudentLifeApp> createState() => _StudentLifeAppState();
-}
-
-class _StudentLifeAppState extends State<StudentLifeApp> {
-  @override
   Widget build(BuildContext context) {
-    final settings = AppData.settings;
+    return FutureBuilder<AppSettings>(
+      future: AppData.getSettings(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const MaterialApp(
+            home: Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Student Life Manager',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode:
-          settings.darkMode ? ThemeMode.dark : ThemeMode.light,
-      home: const HomeScreen(),
+        return ValueListenableBuilder<bool>(
+          valueListenable: darkModeNotifier,
+          builder: (context, isDark, _) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode:
+                  isDark ? ThemeMode.dark : ThemeMode.light,
+              home: const HomeScreen(),
+            );
+          },
+        );
+      },
     );
   }
 }

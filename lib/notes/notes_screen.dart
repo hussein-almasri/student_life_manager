@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_life_manager/core/data/app_data.dart';
 
 class NotesScreen extends StatefulWidget {
   final String subjectName;
@@ -13,14 +14,27 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
-  final List<String> notes = [];
-
+  List<Map<String, dynamic>> notes = [];
   final TextEditingController _noteController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadNotes();
+  }
+
+  Future<void> _loadNotes() async {
+    final data =
+        await AppData.getNotesBySubject(widget.subjectName);
+    setState(() {
+      notes = data;
+    });
+  }
+
   /// ➕ إضافة / ✏️ تعديل
-  void _openNoteDialog({int? index}) {
-    if (index != null) {
-      _noteController.text = notes[index];
+  void _openNoteDialog({Map<String, dynamic>? note}) {
+    if (note != null) {
+      _noteController.text = note['content'];
     } else {
       _noteController.clear();
     }
@@ -29,11 +43,11 @@ class _NotesScreenState extends State<NotesScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(index == null ? ' Add a note' : 'Edit the note '),
+          title: Text(note == null ? 'Add a note' : 'Edit the note'),
           content: TextField(
             controller: _noteController,
             decoration: const InputDecoration(
-              hintText: 'write your note here ',
+              hintText: 'Write your note here',
             ),
             maxLines: 4,
           ),
@@ -43,24 +57,33 @@ class _NotesScreenState extends State<NotesScreen> {
                 _noteController.clear();
                 Navigator.pop(context);
               },
-              child: const Text('delete'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_noteController.text.trim().isEmpty) return;
 
-                setState(() {
-                  if (index == null) {
-                    notes.add(_noteController.text.trim());
-                  } else {
-                    notes[index] = _noteController.text.trim();
-                  }
-                });
+                if (note == null) {
+                  // ➕ إضافة
+                  await AppData.addNote(
+                    subject: widget.subjectName,
+                    title: 'Note',
+                    content: _noteController.text.trim(),
+                  );
+                } else {
+                  // ✏️ تعديل
+                  await AppData.updateNote(
+                    note['id'],
+                    note['title'],
+                    _noteController.text.trim(),
+                  );
+                }
 
                 _noteController.clear();
                 Navigator.pop(context);
+                _loadNotes(); // 🔥 إعادة تحميل من DB
               },
-              child: const Text('save'),
+              child: const Text('Save'),
             ),
           ],
         );
@@ -72,32 +95,40 @@ class _NotesScreenState extends State<NotesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('note  - ${widget.subjectName}'),
+        title: Text('Notes - ${widget.subjectName}'),
       ),
       body: notes.isEmpty
-          ? const Center(child: Text('No note yet'))
+          ? const Center(child: Text('No notes yet'))
           : ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, index) {
+                final note = notes[index];
+
                 return Dismissible(
-                  key: ValueKey(notes[index]),
+                  key: ValueKey(note['id']),
                   direction: DismissDirection.endToStart,
                   background: Container(
                     color: Colors.red,
                     alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child:
-                        const Icon(Icons.delete, color: Colors.white),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Icon(Icons.delete,
+                        color: Colors.white),
                   ),
-                  onDismissed: (_) {
-                    setState(() {
-                      notes.removeAt(index);
-                    });
+                  onDismissed: (_) async {
+                    await AppData.deleteNote(note['id']);
+                    _loadNotes();
                   },
                   child: ListTile(
                     leading: const Icon(Icons.note),
-                    title: Text(notes[index]),
-                    onTap: () => _openNoteDialog(index: index),
+                    title: Text(note['content']),
+                    subtitle: Text(
+                      note['createdDate']
+                          .toString()
+                          .substring(0, 10),
+                    ),
+                    onTap: () =>
+                        _openNoteDialog(note: note),
                   ),
                 );
               },

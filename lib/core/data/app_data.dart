@@ -1,145 +1,153 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:student_life_manager/core/data/database_helper.dart';
+import 'package:student_life_manager/core/settings/app_settings.dart';
+import 'package:student_life_manager/features/subjects/subject_model.dart';
+import 'package:student_life_manager/features/tasks/task_model.dart';
 
-import '../../features/subjects/subject_model.dart';
-import '../../features/tasks/task_model.dart';
-import '../settings/app_settings.dart';
-
-/// 🔔 Notifier للتحكم بالـ Dark Mode
-final ValueNotifier<bool> darkModeNotifier = ValueNotifier<bool>(false);
+final ValueNotifier<bool> darkModeNotifier = ValueNotifier(false);
 
 class AppData {
-  // ===== Hive Boxes =====
-  static final Box subjectsBox = Hive.box('subjects');
-  static final Box tasksBox = Hive.box('tasks');
-  static final Box settingsBox = Hive.box('settings');
-  static final Box notesBox = Hive.box('notes');
+  static final DatabaseHelper dbHelper = DatabaseHelper.instance;
 
   // ===== Subjects =====
-  static List<Subject> get subjects =>
-      subjectsBox.values
-          .map((e) => Subject(name: e as String))
-          .toList();
-
-  static void addSubject(String name) {
-    subjectsBox.add(name);
-  }
-
-  // ===== Tasks =====
-  static List<Task> get tasks =>
-      tasksBox.values.map<Task>((e) {
-        final map = Map<String, dynamic>.from(e as Map);
-
-        return Task(
-          id: map['id'] as int,
-          title: map['title'] as String,
-          subject: map['subject'] as String,
-          dueDate: DateTime.parse(map['dueDate'] as String),
-          isDone: map['isDone'] as bool,
-        );
-      }).toList();
-
-  static void addTask(Task task) {
-    tasksBox.add({
-      'id': task.id,
-      'title': task.title,
-      'subject': task.subject,
-      'dueDate': task.dueDate.toIso8601String(),
-      'isDone': task.isDone,
-    });
-  }
-
-  static void toggleTaskById(int id, bool value) {
-    final index = tasksBox.values
-        .toList()
-        .indexWhere((e) => (e as Map)['id'] == id);
-
-    if (index == -1) return;
-
-    final task = Map<String, dynamic>.from(tasksBox.getAt(index));
-    task['isDone'] = value;
-    tasksBox.putAt(index, task);
-  }
-
-  static void deleteTaskById(int id) {
-    final index = tasksBox.values
-        .toList()
-        .indexWhere((e) => (e as Map)['id'] == id);
-
-    if (index == -1) return;
-
-    tasksBox.deleteAt(index);
-  }
-
-  // ===== Settings =====
-  static AppSettings get settings {
-    final data = settingsBox.get('app_settings');
-
-    if (data == null) {
-      final deviceLang =
-          WidgetsBinding.instance.platformDispatcher.locale.languageCode;
-
-      final defaults = AppSettings.defaultSettings(deviceLang);
-
-      settingsBox.put('app_settings', defaults.toMap());
-      darkModeNotifier.value = defaults.darkMode;
-      return defaults;
-    }
-
-    final settings =
-        AppSettings.fromMap(Map<String, dynamic>.from(data));
-
-    darkModeNotifier.value = settings.darkMode;
-    return settings;
-  }
-
-  static void saveSettings(AppSettings settings) {
-    settingsBox.put('app_settings', settings.toMap());
-    darkModeNotifier.value = settings.darkMode;
-  }
-
-  // ===== Notes =====
-
-  static List<Map<String, dynamic>> notesBySubject(String subject) {
-    return notesBox.values
-        .cast<Map>()
-        .where((n) => n['subject'] == subject)
-        .map((e) => Map<String, dynamic>.from(e))
+  static Future<List<Subject>> getSubjects() async {
+    final db = await dbHelper.database;
+    final result = await db.query('subjects');
+    return result
+        .map((e) => Subject(name: e['name'] as String))
         .toList();
   }
 
-  static void addNote({
+  static Future<void> addSubject(String name) async {
+    final db = await dbHelper.database;
+    await db.insert('subjects', {
+      'name': name.trim(), // 🔧 تطبيع
+    });
+  }
+
+  // ===== Tasks =====
+  static Future<List<Task>> getTasks() async {
+    final db = await dbHelper.database;
+    final result = await db.query('tasks');
+    return result.map((e) => Task(
+      id: e['id'] as int,
+      title: e['title'] as String,
+      subject: e['subject'] as String,
+      dueDate: DateTime.parse(e['dueDate'] as String),
+      isDone: (e['isDone'] as int) == 1,
+    )).toList();
+  }
+
+  static Future<void> addTask(Task task) async {
+    final db = await dbHelper.database;
+    await db.insert('tasks', {
+      'id': task.id,
+      'title': task.title,
+      'subject': task.subject.trim().toLowerCase(), // 🔧 مهم
+      'dueDate': task.dueDate.toIso8601String(),
+      'isDone': task.isDone ? 1 : 0,
+    });
+  }
+
+  static Future<void> toggleTask(int id, bool value) async {
+    final db = await dbHelper.database;
+    await db.update(
+      'tasks',
+      {'isDone': value ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // ===== Notes =====
+  static Future<List<Map<String, dynamic>>> getNotesBySubject(
+      String subject) async {
+    final db = await dbHelper.database;
+    return db.query(
+      'notes',
+      where: 'subject = ?',
+      whereArgs: [subject.trim().toLowerCase()], // ✅ الحل
+      orderBy: 'createdDate DESC',
+    );
+  }
+
+  static Future<void> addNote({
     required String subject,
     required String title,
     required String content,
-  }) {
-    notesBox.add({
-      'id': DateTime.now().millisecondsSinceEpoch,
-      'subject': subject,
+  }) async {
+    final db = await dbHelper.database;
+    await db.insert('notes', {
+      'subject': subject.trim().toLowerCase(), // ✅ الحل
       'title': title,
       'content': content,
       'createdDate': DateTime.now().toIso8601String(),
     });
   }
 
-  static void updateNote(int key, String title, String content) {
-    final raw = notesBox.get(key);
-    if (raw == null) return;
-
-    final note = Map<String, dynamic>.from(raw);
-    note['title'] = title;
-    note['content'] = content;
-    notesBox.put(key, note);
-  }
-
-  static void deleteNote(int key) {
-    if (!notesBox.containsKey(key)) return;
-    notesBox.delete(key);
-  }
-
-  static int notesBoxKey(Map note) {
-    return notesBox.keys.firstWhere(
-      (k) => notesBox.get(k)?['id'] == note['id'],
+  static Future<void> updateNote(
+    int id,
+    String title,
+    String content,
+  ) async {
+    final db = await dbHelper.database;
+    await db.update(
+      'notes',
+      {
+        'title': title,
+        'content': content,
+      },
+      where: 'id = ?',
+      whereArgs: [id],
     );
+  }
+
+  static Future<void> deleteNote(int id) async {
+    final db = await dbHelper.database;
+    await db.delete(
+      'notes',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // ===== Settings =====
+  static Future<AppSettings> getSettings() async {
+    final db = await dbHelper.database;
+    final result = await db.query(
+      'settings',
+      where: 'key = ?',
+      whereArgs: ['app_settings'],
+    );
+
+    if (result.isEmpty) {
+      final lang =
+          WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+      final defaults = AppSettings.defaultSettings(lang);
+
+      await db.insert('settings', {
+        'key': 'app_settings',
+        'value': defaults.toJson(),
+      });
+
+      darkModeNotifier.value = defaults.darkMode;
+      return defaults;
+    }
+
+    final settings =
+        AppSettings.fromJson(result.first['value'] as String);
+    darkModeNotifier.value = settings.darkMode;
+    return settings;
+  }
+
+  static Future<void> saveSettings(AppSettings settings) async {
+    final db = await dbHelper.database;
+    await db.update(
+      'settings',
+      {'value': settings.toJson()},
+      where: 'key = ?',
+      whereArgs: ['app_settings'],
+    );
+    darkModeNotifier.value = settings.darkMode;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class AppSettings {
   final bool darkMode;
   final bool notificationsEnabled;
@@ -46,4 +48,10 @@ class AppSettings {
       languageCode: map['languageCode'] ?? 'ar',
     );
   }
+
+  // ✅ هذا المهم
+  String toJson() => jsonEncode(toMap());
+
+  factory AppSettings.fromJson(String source) =>
+      AppSettings.fromMap(jsonDecode(source));
 }
