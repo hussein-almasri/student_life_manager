@@ -6,16 +6,18 @@ plugins {
 }
 
 android {
-    namespace = "com.example.student_life_manager"
+    // ✅ اسم نهائي مناسب للنشر
+    namespace = "com.hussein.studentlifemanager"
+
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        // Java 17 (مسموح + ممتاز)
+        // Java 17 (ممتاز)
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
 
-        // ✅ الحل لمشكلة flutter_local_notifications
+        // Required for desugaring
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -24,7 +26,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.student_life_manager"
+        // ✅ applicationId النهائي (لا تغيّره بعد النشر)
+        applicationId = "com.hussein.studentlifemanager"
+
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -33,14 +37,15 @@ android {
 
     buildTypes {
         release {
-            // توقيع debug مؤقت (عادي للتجربة)
+            // ⚠️ مؤقتًا debug
+            // لاحقًا راح نغيّره لـ keystore حقيقي
             signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
 
 dependencies {
-    // ✅ Required for Java 8+ desugaring
+    // Required for Java 8+ desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
 
