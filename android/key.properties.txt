@@ -1,4 +1,0 @@
-storePassword=hussein1207
-keyPassword=hussein1207
-keyAlias=studentlife
-storeFile=../student_life_keystore.jks

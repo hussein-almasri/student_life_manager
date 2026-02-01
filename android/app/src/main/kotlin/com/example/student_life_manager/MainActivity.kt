@@ -1,4 +1,4 @@
-package com.example.student_life_manager
+package com.hussein.studentlifemanager
 
 import io.flutter.embedding.android.FlutterActivity
 
