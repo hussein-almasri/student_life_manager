@@ -134,4 +134,203 @@ lib/
 │
 ├── home_screen.dart
 └── main.dart
+---
+
+# 📸 Screenshots
+
+> Replace these images with screenshots from your application.
+
+## Dashboard
+
+<p align="center">
+  <img src="assets/screenshots/dashboard.png" width="250">
+</p>
+
+---
+
+## Subjects
+
+<p align="center">
+  <img src="assets/screenshots/subjects.png" width="250">
+</p>
+
+---
+
+## Tasks
+
+<p align="center">
+  <img src="assets/screenshots/tasks.png" width="250">
+</p>
+
+---
+
+## Notes
+
+<p align="center">
+  <img src="assets/screenshots/notes.png" width="250">
+</p>
+
+---
+
+## Settings
+
+<p align="center">
+  <img src="assets/screenshots/settings.png" width="250">
+</p>
+
+---
+
+# ⚙️ Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/hussein-almasri/student_life_manager.git
+```
+
+Go to the project
+
+```bash
+cd student_life_manager
+```
+
+Install dependencies
+
+```bash
+flutter pub get
+```
+
+Run the application
+
+```bash
+flutter run
+```
+
+---
+
+# ▶️ Build Commands
+
+### Android APK
+
+```bash
+flutter build apk
+```
+
+### Android App Bundle
+
+```bash
+flutter build appbundle
+```
+
+### Web
+
+```bash
+flutter build web
+```
+
+### Windows
+
+```bash
+flutter build windows
+```
+
+### macOS
+
+```bash
+flutter build macos
+```
+
+### Linux
+
+```bash
+flutter build linux
+```
+
+---
+
+# 📖 Usage
+
+### 1️⃣ Add your subjects
+
+Create your university or school subjects.
+
+↓
+
+### 2️⃣ Add your assignments
+
+Create tasks and choose the related subject.
+
+↓
+
+### 3️⃣ Track your progress
+
+Mark completed assignments and monitor your productivity.
+
+↓
+
+### 4️⃣ Take notes
+
+Save study notes for every subject.
+
+↓
+
+### 5️⃣ Stay organized
+
+Everything is stored locally and available anytime.
+
+---
+
+# 🏛 Architecture
+
+The application follows a **Feature-First Architecture**.
+
+```
+Presentation
+      │
+      ▼
+Business Logic
+      │
+      ▼
+SQLite Database
+```
+
+---
+
+# 💾 Local Storage
+
+The application stores all data locally using **SQLite**.
+
+Stored data includes:
+
+- Subjects
+- Tasks
+- Notes
+- User Settings
+
+No internet connection is required.
+
+---
+
+# 🎨 UI Design
+
+- Material Design 3
+- Responsive Layout
+- Light Theme
+- Dark Theme
+- Modern Navigation
+- Clean Typography
+
+---
+
+# 🔥 Highlights
+
+- Offline First
+- Fast Performance
+- Cross Platform
+- Clean UI
+- SQLite Database
+- Lightweight
+- Easy to Use
+- Student Focused
+
 ```
