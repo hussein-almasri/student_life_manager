@@ -1,16 +1,137 @@
-# student_life_manager
+# 🎓 Student Life Manager
 
-A new Flutter project.
+<div align="center">
 
-## Getting Started
+### **Organize your academic life in one place.**
 
-This project is a starting point for a Flutter application.
+*A modern offline-first Flutter application that helps students manage subjects, assignments, and notes with a clean and intuitive interface.*
 
-A few resources to get you started if this is your first Flutter project:
+![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge\&logo=flutter)
+![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge\&logo=dart)
+![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=for-the-badge\&logo=sqlite)
+![Platform](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Web%20%7C%20Desktop-success?style=for-the-badge)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+</div>
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 📖 About
+
+**Student Life Manager** is a cross-platform Flutter application designed to simplify academic organization for students.
+
+Instead of using multiple apps for notes, assignments, and subjects, this application brings everything together in one simple, fast, and completely offline experience.
+
+Whether you're managing university courses, tracking assignment deadlines, or writing study notes, Student Life Manager helps keep everything organized in one place.
+
+---
+
+# ✨ Features
+
+## 📊 Dashboard
+
+* View task completion statistics
+* Track completed and pending tasks
+* Visual progress indicator
+* Quick access to application settings
+
+---
+
+## 📚 Subject Management
+
+* Add unlimited academic subjects
+* View all subjects in one place
+* Open detailed subject pages
+* Organize tasks by subject
+
+---
+
+## ✅ Task Management
+
+* Create assignments and study tasks
+* Assign tasks to subjects
+* Select due date & time
+* Mark tasks as completed
+* Search tasks instantly
+* Sort tasks by deadline
+
+---
+
+## 📝 Notes
+
+* Create notes for every subject
+* Edit notes anytime
+* Swipe to delete notes
+* Automatically save creation date
+
+---
+
+## 🌙 Settings
+
+* Dark Mode support
+* Persistent application settings
+* Material 3 Design
+
+---
+
+# 🚀 Why Student Life Manager?
+
+✔ Works completely offline
+
+✔ No account required
+
+✔ Fast SQLite database
+
+✔ Modern Material 3 UI
+
+✔ Lightweight architecture
+
+✔ Cross-platform support
+
+---
+
+# 🛠 Tech Stack
+
+| Technology    | Description                 |
+| ------------- | --------------------------- |
+| Flutter       | Cross-platform UI Framework |
+| Dart          | Programming Language        |
+| SQLite        | Local Database              |
+| Material 3    | UI Design System            |
+| sqflite       | Database Package            |
+| ValueNotifier | Theme Management            |
+| FutureBuilder | Async Data Handling         |
+
+---
+
+# 📱 Supported Platforms
+
+* ✅ Android
+* ✅ iOS
+* ✅ Web
+* ✅ Windows
+* ✅ macOS
+* ✅ Linux
+
+---
+
+# 📂 Project Structure
+
+```text
+lib/
+│
+├── core/
+│   ├── data/
+│   ├── settings/
+│   └── theme/
+│
+├── features/
+│   ├── dashboard/
+│   ├── settings/
+│   ├── subjects/
+│   └── tasks/
+│
+├── notes/
+│
+├── home_screen.dart
+└── main.dart
+```
